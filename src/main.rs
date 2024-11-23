@@ -1,4 +1,4 @@
-use std::fs::{read_to_string, File, OpenOptions};
+use std::fs::{self, read_to_string, File, OpenOptions};
 use std::io::{BufRead, BufReader, Read, Seek, SeekFrom, Write};
 
 fn main () {
@@ -36,9 +36,15 @@ fn main () {
         let line_number_str= std::env::args().nth(2).expect("couldn't read line number");
         let line_number = line_number_str.parse().unwrap();
         println!("{:?}", read_file(data_file, line_number));
-    } else if option == "-d" {
-        // deleting lines
+
+    } else if option == "--clear-data-file" {
+        // deleting the data file and creating a new empty one
+        fs::remove_file(data_file).unwrap();
+        File::create(data_file).unwrap();
     
+    } else if option == "-d" {
+        // deleting lines from data file
+
     } else {
         println!("No option selected");
     }

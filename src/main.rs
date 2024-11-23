@@ -17,36 +17,41 @@ fn main () {
     let option = std::env::args().nth(1).expect("couldn't read argument");
     
     // options for the program
-    // possible change: replace if for match
-    if option == "-a" {
-        // writing data to file
-        let text = std::env::args().nth(2).expect("couldn't read text for file");
-        write!(file, "{}.", (line_count(data_file)+1)).unwrap();
-        writeln!(file, "{}", text).unwrap();
+    match option.as_str() {
+        
+        "-a" => {
+            // writing data to file
+            let text = std::env::args().nth(2).expect("couldn't read text for file");
+            write!(file, "{}.", (line_count(data_file)+1)).unwrap();
+            writeln!(file, "{}", text).unwrap();
+        }
 
-    } else if option == "-r" {
-        // reading data from file
-        let mut content = String::new();
-        file.seek(SeekFrom::Start(0)).unwrap(); //pointer reset
-        file.read_to_string(&mut content).unwrap();
-        println!("{}", content);
+        "-r" => {
+            // reading data from file
+            let mut content = String::new();
+            file.seek(SeekFrom::Start(0)).unwrap(); //pointer reset
+            file.read_to_string(&mut content).unwrap();
+            println!("{}", content);
+            }
 
-    } else if option == "-s" {
-        // reading selected line of file
-        let line_number_str= std::env::args().nth(2).expect("couldn't read line number");
-        let line_number = line_number_str.parse().unwrap();
-        println!("{:?}", read_file(data_file, line_number));
+        "-s" => {
+            // reading selected line of file
+            let line_number_str= std::env::args().nth(2).expect("couldn't read line number");
+            let line_number = line_number_str.parse().unwrap();
+            println!("{:?}", read_file(data_file, line_number));
+            }
 
-    } else if option == "--clear-data-file" {
-        // deleting the data file and creating a new empty one
-        fs::remove_file(data_file).unwrap();
-        File::create(data_file).unwrap();
-    
-    } else if option == "-d" {
-        // deleting lines from data file
+        "--clear-data-file" => {
+            // deleting the data file and creating a new empty one
+            fs::remove_file(data_file).unwrap();
+            File::create(data_file).unwrap();
+            }
 
-    } else {
-        println!("No option selected");
+        "-d" => {
+            // deleting lines from data file
+        }
+        // no option/ not supported
+        _ => println!("No option selected")
     }
 }
 

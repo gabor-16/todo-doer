@@ -1,9 +1,9 @@
-use std::fs::{self, read_to_string, File, OpenOptions};
+use std::fs::{read_to_string, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 
 fn main () {
     // data file name/location
-    let data_file: &str = "todo_doer_data.txt";
+    let data_file: &str = "todo-doer_data.txt";
     // file creation and opening
     let mut file = OpenOptions::new()
         .read(true)
@@ -28,41 +28,63 @@ fn main () {
 
         "-r" => {
             // reading data from file
-            let reader = BufReader::new(file);
-            let mut count = 0;
-            for line in reader.lines() {
-                count = count + 1;
-                let line = line.unwrap();
-                println!("{}.{}", count, line);
+            let lines = read_all_lines(data_file);
+
+            if lines.is_empty() {
+                println!("Todo list is empty.");
+            } else {
+                for (index, line) in lines.iter().enumerate() {
+                    println!("{}.{}", index + 1, line);
                 }
+            }
             }
 
         "-s" => {
             // reading selected line of file
             let line_number_str= std::env::args().nth(2).expect("couldn't read line number");
-            let line_number = line_number_str.parse().unwrap();
-            println!("{:?}", read_line(data_file, line_number));
+            let line_number = match line_number_str.parse() {
+                Ok(n) => n,
+                Err(_) => {
+                    eprintln!("Error: Line number must be an integer");
+                    return;
+                }
+            };
+            println!("{:?}", read_line_from_file(data_file, line_number));
             }
 
         "--clear-list" => {
             // deleting the data file and creating a new empty one
-            fs::remove_file(data_file).unwrap();
-            File::create(data_file).unwrap();
-            }
+            OpenOptions::new().write(true).truncate(true).open(data_file).unwrap();
+        }
 
         "-d" => {
             // deleting lines from data file
         }
-        // no option/ not supported
-        _ => println!("No option selected")
+
+        "--help" | "-h" | _ => {
+            // help option
+            println!("This is a help message");
+            println!("usage: cargo run -- [option] [text]")
+        }
     }
 }
 
 // finction for reading lines of data file
-fn read_line(filename: &str, line_number: usize) -> String{
+fn read_line_from_file(filename: &str, line_number: usize) -> String{
     let mut result = Vec::new();
     for line in read_to_string(filename).unwrap().lines() {
         result.push(line.to_string())
     } 
-    return result[line_number - 1].clone();
+    if line_number == 0 || line_number > result.len() {
+        return format!("Error: Line number {} is out of range.", line_number);
+    } else {
+        return result[line_number - 1].clone();        
+    }    
+}
+// reads data file into memory
+fn read_all_lines(filename: &str) -> Vec<String> {
+    BufReader::new(OpenOptions::new().read(true).open(filename).unwrap())
+        .lines()
+        .map(|line| line.unwrap())
+        .collect()
 }

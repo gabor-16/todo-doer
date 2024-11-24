@@ -59,6 +59,41 @@ fn main () {
 
         "-d" => {
             // deleting lines from data file
+            let line_for_deletion_str = std::env::args().nth(2).expect("could't read line for deletion");
+            let line_for_deletion_num: usize = match line_for_deletion_str.parse() {
+                Ok(n) => n,
+                Err(_) => {
+                    eprintln!("Error: Line number must be an iteger");
+                    return;
+                }
+            };
+            // reads file and turns lines into vec
+            // FIXME: if possible make this not need 2 for loops and a lot of space
+            let lines = read_all_lines(data_file);
+            if lines.is_empty() {
+                println!("Todo list is empty.");
+            } else {
+                let mut new_file = Vec::new();
+                for (index, line) in lines.iter().enumerate() {
+                    if index == (line_for_deletion_num -1) {
+                        let new_line = line.replace(line, "");
+                        new_file.push(new_line.to_string());
+                    } else {
+                        new_file.push(line.to_string());
+                    }
+                }
+                // turns vec into string and deletes epmty strings
+                let mut result = String::new();
+                for s in new_file {
+                    if !(s == "") {
+                        result.push_str(&s);
+                        result.push_str("\n");
+                    }
+                }
+
+                let mut replaced_file = OpenOptions::new().write(true).truncate(true).open(data_file).unwrap();
+                replaced_file.write_all(result.as_bytes()).unwrap();
+            }
         }
 
         "--help" | "-h" | _ => {

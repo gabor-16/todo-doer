@@ -99,7 +99,14 @@ fn main () {
         "--help" | "-h" | _ => {
             // help option
             println!("This is a help message");
-            println!("usage: cargo run -- [option] [text]")
+            println!("usage: cargo run -- [option] [text]\n
+            Options:\n
+            -h or --help    shows this message\n
+            -a              adds one line to data file\n
+            -r              reads whole data file\n
+            -s              reads selected data line\n
+            -d              deletes chosen\n
+            --clear-list    clears whole data file")
         }
     }
 }

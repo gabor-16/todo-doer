@@ -1,3 +1,4 @@
+use std::env;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 
@@ -12,16 +13,16 @@ fn main () {
         .append(true)
         .open(data_file)
         .expect("couldn't find file");
+   
+    // taking arguments
+    let args: Vec<String> = env::args().collect();
 
-    // collectiong user input
-    let option = std::env::args().nth(1).expect("couldn't read argument");
-    
     // options for the program
-    match option.as_str() {
+    match args[1].as_str() {
         
         "-a" => {
             // writing data to file
-            let text = std::env::args().nth(2).expect("couldn't read text for file");
+            let text = &args[2];
             file.write(text.as_bytes()).unwrap();
             file.write("\n".as_bytes()).unwrap();            
         }
@@ -41,7 +42,7 @@ fn main () {
 
         "-s" => {
             // reading selected line of file
-            let line_number_str= std::env::args().nth(2).expect("couldn't read line number");
+            let line_number_str= &args[2];
             let line_number = match line_number_str.parse() {
                 Ok(n) => n,
                 Err(_) => {
@@ -59,7 +60,7 @@ fn main () {
 
         "-d" => {
             // deleting lines from data file
-            let line_for_deletion_str = std::env::args().nth(2).expect("could't read line for deletion");
+            let line_for_deletion_str = &args[2];
             let line_for_deletion_num: usize = match line_for_deletion_str.parse() {
                 Ok(n) => n,
                 Err(_) => {
@@ -105,7 +106,7 @@ fn main () {
             -a              adds one line to data file\n
             -r              reads whole data file\n
             -s              reads selected data line\n
-            -d              deletes chosen\n
+            -d              deletes chosen line from file\n
             --clear-list    clears whole data file")
         }
     }

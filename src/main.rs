@@ -111,7 +111,7 @@ fn main () {
     }
 }
 
-// finction for reading lines of data file
+// function for reading lines of data file
 fn read_line_from_file(filename: &str, line_number: usize) -> String{
     let mut result = Vec::new();
     for line in read_to_string(filename).unwrap().lines() {
